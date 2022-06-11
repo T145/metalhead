@@ -1,0 +1,41 @@
+﻿name: Publish Lists to GitHub
+
+on:
+  schedule:
+    - cron: '0 6 * * */3'
+  workflow_dispatch:
+
+jobs:
+  github:
+    runs-on: ubuntu-latest
+
+    container:
+      image: ghcr.io/t145/black-mirror:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ github.token }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Fetch assets
+        id: release_data
+        uses: KevinRohn/github-full-release-data@v2.0.2
+        with:
+          repository: 'T145/black-mirror'
+          asset-file: '*.txt'
+          asset-output: './assets/'
+
+      - name: Generate lists
+        run: |
+          dnsx -r configs/resolvers.txt -l assets/black_domain*.txt -silent -rcode nxdomain | mawk '{print $1}' | parsort -u -S 100% --parallel=48 | sponge dist/black_domain.txt
+        shell: bash
+
+      - name: Create GitHub release
+        uses: marvinpinto/action-automatic-releases@v1.2.1
+        with:
+          automatic_release_tag: latest
+          prerelease: false
+          title: All Artifacts
+          files: dist/*.txt
