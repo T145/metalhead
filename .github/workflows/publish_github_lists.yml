@@ -27,10 +27,12 @@ jobs:
       #     asset-file: '*.txt'
       #     asset-output: './assets/'
 
+      # Max thread count is 204822, as given by `cat /proc/sys/kernel/threads-max`
+      # https://askubuntu.com/questions/1006377/check-the-max-allowed-threads-count-for-sure#1006384
       - name: Generate lists
         run: |
-          aria2c -d ./assets/ https://github.com/T145/black-mirror/releases/download/latest/black_domain.txt
-          dnsx -r ./configs/resolvers.txt -l ./assets/black_domain*.txt -o ./dist/black_domain.txt -silent -rcode nxdomain
+          aria2c -d ./assets https://github.com/T145/black-mirror/releases/download/latest/black_domain.txt
+          dnsx -r ./configs/resolvers.txt -l ./assets/black_domain*.txt -o ./dist/black_domain.txt -c 100000 -silent -rcode nxdomain
           mawk '{print $1}' ./dist/black_domain.txt | parsort -u -S 100% --parallel=48 | sponge ./dist/black_domain.txt
         shell: bash
 
