@@ -1,5 +1,5 @@
 <div align="center">
-  <img src=".github/images/logo.jpg"
+  <img src="images/logo.jpg"
        width="600"
        alt="logo"
        longdesc="https://github.com/T145/metalhead/master/README.md" />
