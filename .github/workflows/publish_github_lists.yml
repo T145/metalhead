@@ -29,7 +29,7 @@ jobs:
 
       - name: Generate lists
         run: |
-          dnsx -r configs/resolvers.txt -l assets/black_domain*.txt -o dist/black_domain.txt -silent -rcode nxdomain
+          go/bin/dnsx -r configs/resolvers.txt -l assets/black_domain*.txt -o dist/black_domain.txt -silent -rcode nxdomain
           mawk '{print $1}' dist/black_domain.txt | parsort -u -S 100% --parallel=48 | sponge dist/black_domain.txt
         shell: bash
 
