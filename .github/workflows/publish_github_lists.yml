@@ -25,14 +25,14 @@ jobs:
         run: |
           curl --proto '=https' --tlsv1.3 -H 'Accept: application/vnd.github.v3+json' -sSf https://api.github.com/repos/T145/black-mirror/releases/latest | jq -r '.assets[] | select(.name | endswith("txt")).browser_download_url' | aria2c -i- -d ./assets --conf-path='./configs/aria2.conf'
           dnsx -r ./configs/resolvers.txt -l ./assets/black_domain*.txt -o ./dist/black_nxdomain.txt -c 200000 -silent -rcode nxdomain
-          mawk '{print $1}' ./dist/black_nxdomain.txt | parsort -u -S 100% --parallel=48 | sponge ./dist/black_nxdomain.txt
+          mawk '{print $1}' ./dist/black_nxdomain.txt | sponge ./dist/black_nxdomain.txt
         shell: bash
 
-      - name: Create GitHub release
-        uses: marvinpinto/action-automatic-releases@v1.2.1
-        with:
-          repo_token: ${{ github.token }}
-          automatic_release_tag: latest
-          prerelease: false
-          title: All Artifacts
-          files: dist/*.txt
+      # - name: Create GitHub release
+      #   uses: marvinpinto/action-automatic-releases@v1.2.1
+      #   with:
+      #     repo_token: ${{ github.token }}
+      #     automatic_release_tag: latest
+      #     prerelease: false
+      #     title: All Artifacts
+      #     files: dist/*.txt
