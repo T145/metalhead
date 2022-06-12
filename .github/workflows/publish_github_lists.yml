@@ -19,21 +19,13 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      # - name: Fetch assets
-      #   id: release_data
-      #   uses: KevinRohn/github-full-release-data@v2.0.2
-      #   with:
-      #     repository: 'T145/black-mirror'
-      #     asset-file: '*.txt'
-      #     asset-output: './assets/'
-
       # Max thread count is 204822, as given by `cat /proc/sys/kernel/threads-max`
       # https://askubuntu.com/questions/1006377/check-the-max-allowed-threads-count-for-sure#1006384
       - name: Generate lists
         run: |
-          aria2c -d ./assets https://github.com/T145/black-mirror/releases/download/latest/black_domain.txt
-          dnsx -r ./configs/resolvers.txt -l ./assets/black_domain*.txt -o ./dist/black_domain.txt -c 200000 -silent -rcode nxdomain
-          mawk '{print $1}' ./dist/black_domain.txt | parsort -u -S 100% --parallel=48 | sponge ./dist/black_domain.txt
+          curl --proto '=https' --tlsv1.3 -H 'Accept: application/vnd.github.v3+json' -sSf https://api.github.com/repos/T145/black-mirror/releases/latest | jq -r '.assets[] | select(.name | endswith("txt")).browser_download_url' | aria2c -i- -d ./assets --conf-path='./configs/aria2.conf'
+          dnsx -r ./configs/resolvers.txt -l ./assets/black_domain*.txt -o ./dist/black_nxdomain.txt -c 200000 -silent -rcode nxdomain
+          mawk '{print $1}' ./dist/black_nxdomain.txt | parsort -u -S 100% --parallel=48 | sponge ./dist/black_nxdomain.txt
         shell: bash
 
       - name: Create GitHub release
