@@ -24,7 +24,7 @@ jobs:
       - name: Generate lists
         run: |
           curl --proto '=https' --tlsv1.3 -H 'Accept: application/vnd.github.v3+json' -sSf https://api.github.com/repos/T145/black-mirror/releases/latest | jq -r '.assets[] | select(.name | endswith("txt")).browser_download_url' | aria2c -i- -d ./assets --conf-path='./configs/aria2.conf'
-          dnsx -r ./configs/resolvers.txt -l ./assets/black_domain*.txt -o ./dist/black_nxdomain.txt -c 200000 -silent -rcode nxdomain
+          dnsx -r ./configs/resolvers.txt -l ./assets/black_domain*.txt -o ./dist/black_nxdomain.txt -c 200000 -silent -rcode nxdomain 1> /dev/null
           mawk '{print $1}' ./dist/black_nxdomain.txt | sponge ./dist/black_nxdomain.txt
           rm -rf ./assets/*.txt
         shell: bash
