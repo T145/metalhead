@@ -32,6 +32,16 @@ jobs:
         run: echo "$STEPS_CONTEXT"
         shell: bash
 
+      - name: Create GitHub release
+        if: steps.build.outputs.status == 'success'
+        uses: marvinpinto/action-automatic-releases@v1.2.1
+        with:
+          repo_token: ${{ github.token }}
+          automatic_release_tag: latest
+          prerelease: false
+          title: All Artifacts
+          files: dist/*
+
       - name: Update documents
         if: steps.build.outputs.status == 'success'
         uses: stefanzweifel/git-auto-commit-action@v4
