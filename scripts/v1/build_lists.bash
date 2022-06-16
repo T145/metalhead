@@ -9,10 +9,11 @@ main() {
     # https://askubuntu.com/questions/1006377/check-the-max-allowed-threads-count-for-sure#1006384
     # TODO: Perform these steps for each list!
     if test -f './dist/black_nxdomain.txt'; then
-        dnsx -r ./configs/resolvers.txt -hf ./dist/black_nxdomain.txt -l ./assets/black_domain*.txt -o ./assets/black_nxdomain.txt -c 200000 -silent -rcode nxdomain 1>/dev/null
-        mawk '{print $1}' ./assets/black_nxdomain.txt | comm ./dist/black_nxdomain.txt - -13 >>./dist/black_nxdomain.txt
+        dnsx -r ./configs/resolvers.txt -hf ./dist/black_nxdomain.txt -l ./assets/black_domain*.txt -c 200000 -silent -rcode nxdomain |
+            mawk '{print $1}' |
+            comm ./dist/black_nxdomain.txt - -13 >>./dist/black_nxdomain.txt
     else
-        dnsx -r ./configs/resolvers.txt -l ./assets/black_domain*.txt -o ./assets/black_nxdomain.txt -c 200000 -silent -rcode nxdomain 1>/dev/null
+        dnsx -r ./configs/resolvers.txt -l ./assets/black_domain*.txt -o ./dist/black_nxdomain.txt -c 200000 -silent -rcode nxdomain 1>/dev/null
     fi
 
     rm -rf ./assets/*.txt
