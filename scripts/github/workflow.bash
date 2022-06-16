@@ -3,7 +3,7 @@
 main() {
     local result
 
-    git config --global --add safe.directory /__w/black-mirror/black-mirror
+    git config --global --add safe.directory /__w/metalhead/metalhead
     ./scripts/v1/build_lists.bash
 
     [[ "$?" = 0 ]] && result='success' || result='failure'
