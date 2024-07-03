@@ -18,14 +18,14 @@ merge_lists() {
 
 main() {
   curl --proto '=https' --tlsv1.3 -H 'Accept: application/vnd.github.v3+json' -sSf https://api.github.com/repos/T145/black-mirror/releases/latest |
-    jq -r '.assets[] | select(.name | endswith("txt")).browser_download_url' |
+    jaq -r '.assets[] | select(.name | endswith("txt")).browser_download_url' |
     aria2c -i- -d ./assets --conf-path='./configs/aria2.conf'
 
   local nxlist
   local list
 
-  nxlist='./dist/black_nxdomain.txt'
-  list='./assets/black_domain.txt'
+  nxlist='./dist/BLOCK_NXDOMAIN.txt'
+  list='./assets/BLOCK_DOMAIN.txt'
 
   # Max thread count is 204822, as given by `cat /proc/sys/kernel/threads-max`
   # https://askubuntu.com/questions/1006377/check-the-max-allowed-threads-count-for-sure#1006384
