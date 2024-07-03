@@ -34,8 +34,6 @@ jobs:
           STEPS_CONTEXT: ${{ toJson(steps) }}
         run: echo "$STEPS_CONTEXT"
         shell: bash
-      - name: Make the working tree safe
-        run: git config --global --add safe.directory /__w/metalhead/metalhead
       - name: Update documents
         if: steps.build.outputs.status == 'success'
         uses: stefanzweifel/git-auto-commit-action@v5

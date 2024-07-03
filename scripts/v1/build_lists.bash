@@ -45,14 +45,14 @@ main() {
   # TODO: Perform these steps for each list!
   if test -f "$nxlist"; then
     # TODO: Export JSON from dnsX and use jq to pull out domains & ips
-    dnsx -r ./configs/resolvers.txt -l "$nxlist" -o "$TMP" -c 200000 -silent -rcode noerror,servfail,refused 1>/dev/null
+    dnsx -r ./configs/resolvers.txt -l "$nxlist" -o "$TMP" -c 20000 -silent -rcode noerror,servfail,refused 1>/dev/null
     merge_lists "$list" "$TMP"
     # nxlist should be small enough that parallel isn't needed
     grep -Fxvf "$TMP" "$nxlist" | sponge "$nxlist"
-    dnsx -r ./configs/resolvers.txt -hf "$nxlist" -l "$list" -o "$nxlist" -c 200000 -silent -rcode nxdomain 1>/dev/null
+    dnsx -r ./configs/resolvers.txt -hf "$nxlist" -l "$list" -o "$nxlist" -c 20000 -silent -rcode nxdomain 1>/dev/null
     : >"$TMP"
   else
-    dnsx -r ./configs/resolvers.txt -l "$list" -o "$nxlist" -c 200000 -silent -rcode nxdomain 1>/dev/null
+    dnsx -r ./configs/resolvers.txt -l "$list" -o "$nxlist" -c 20000 -silent -rcode nxdomain 1>/dev/null
   fi
 
   rm -rf ./assets/*.txt
