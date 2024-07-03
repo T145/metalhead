@@ -4,18 +4,6 @@ TMP=$(mktemp)
 readonly TMP
 trap 'rm -rf "$TMP"' EXIT || exit 1
 
-# params: file path
-sorted() {
-  parsort -bfiu -S 100% --parallel=200000 -T "$DOWNLOADS" "$1" | sponge "$1"
-}
-
-# merge list 2 into list 1
-# params: list 1, list 2
-merge_lists() {
-  cat "$1" "$2" >"$1"
-  sorted "$1"
-}
-
 # https://github.com/ildar-shaimordanov/perl-utils#sponge
 sponge() {
 	perl -ne '
@@ -27,6 +15,18 @@ sponge() {
 		close(OUT);
 	}
 	' -s -- -file="$1"
+}
+
+# params: file path
+sorted() {
+  parsort -bfiu -S 100% -T "$DOWNLOADS" "$1" | sponge "$1"
+}
+
+# merge list 2 into list 1
+# params: list 1, list 2
+merge_lists() {
+  cat "$1" "$2" >"$1"
+  sorted "$1"
 }
 
 main() {
