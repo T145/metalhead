@@ -19,7 +19,7 @@ sponge() {
 
 # params: file path
 sorted() {
-  parsort -bfiu -S 100% -T "$DOWNLOADS" "$1" | sponge "$1"
+  parsort -bfiu -S 100% "$1" | sponge "$1"
 }
 
 # merge list 2 into list 1
@@ -33,6 +33,8 @@ main() {
   curl --proto '=https' --tlsv1.3 -H 'Accept: application/vnd.github.v3+json' -sSf https://api.github.com/repos/T145/black-mirror/releases/latest |
     jaq -r '.assets[] | select(.name | endswith("txt")).browser_download_url' |
     aria2c -i- -d ./assets --conf-path='./configs/aria2.conf'
+
+  echo 'Downloaded lists!'
 
   local nxlist
   local list
