@@ -27,15 +27,13 @@ jobs:
       - name: Generate lists
         id: build
         run: |
-          chmod -R 755 ./scripts/*
-          ./scripts/github/workflow.bash
-      - name: Dump output context
-        env:
-          STEPS_CONTEXT: ${{ toJson(steps) }}
-        run: echo "$STEPS_CONTEXT"
-        shell: bash
+          curl --proto '=https' --tlsv1.3 -H 'Accept: application/vnd.github.v3+json' -sSf https://api.github.com/repos/T145/black-mirror/releases/latest |
+            jaq -r '.assets[] | select(.name | endswith("txt")).browser_download_url' |
+            aria2c -i- -d ./assets
+
+          dnsx -silent -rcode nxdomain -l './assets/BLOCK_DOMAIN.txt' -o './dist/BLOCK_NXDOMAIN.txt' 1>/dev/null
       - name: Update documents
-        if: steps.build.outputs.status == 'success'
+        if: success()
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           # homage to the python linting utility "black"
