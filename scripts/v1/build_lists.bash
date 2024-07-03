@@ -16,6 +16,19 @@ merge_lists() {
   sorted "$1"
 }
 
+# https://github.com/ildar-shaimordanov/perl-utils#sponge
+sponge() {
+	perl -ne '
+	push @lines, $_;
+	END {
+		open(OUT, ">$file")
+		or die "sponge: cannot open $file: $!\n";
+		print OUT @lines;
+		close(OUT);
+	}
+	' -s -- -file="$1"
+}
+
 main() {
   curl --proto '=https' --tlsv1.3 -H 'Accept: application/vnd.github.v3+json' -sSf https://api.github.com/repos/T145/black-mirror/releases/latest |
     jaq -r '.assets[] | select(.name | endswith("txt")).browser_download_url' |
