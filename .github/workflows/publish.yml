@@ -1,47 +1,48 @@
-name: Publish Lists
+---
+name: Publish
 
 on:
   schedule:
     - cron: '0 6 * * */3'
   workflow_dispatch:
 
+# https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+permissions: read-all
+
 jobs:
   github:
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
     container:
       image: ghcr.io/t145/black-mirror:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ github.token }}
-
+      options: --user root
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
       - name: Generate lists
         id: build
-        run: ./scripts/github/workflow.bash
-        shell: bash
-
+        run: |
+          chmod -R 755 ./scripts/*
+          ./scripts/github/workflow.bash
       - name: Dump output context
         env:
           STEPS_CONTEXT: ${{ toJson(steps) }}
         run: echo "$STEPS_CONTEXT"
         shell: bash
-
       - name: Create GitHub release
         if: steps.build.outputs.status == 'success'
-        uses: marvinpinto/action-automatic-releases@v1.2.1
+        uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: ${{ github.token }}
           automatic_release_tag: latest
           prerelease: false
           title: All Artifacts
           files: dist/*
-
       - name: Update documents
         if: steps.build.outputs.status == 'success'
         uses: stefanzweifel/git-auto-commit-action@v5
