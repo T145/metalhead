@@ -3,7 +3,7 @@
 main() {
     git config --global --add safe.directory /__w/metalhead/metalhead
 
-    if ./scripts/v1/build_lists.bash; then
+    if ./scripts/v1/build.bash; then
         echo "status=success" >>"$GITHUB_OUTPUT"
     else
         cat <&2

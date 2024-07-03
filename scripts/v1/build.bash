@@ -6,15 +6,15 @@ trap 'rm -rf "$TMP"' EXIT || exit 1
 
 # https://github.com/ildar-shaimordanov/perl-utils#sponge
 sponge() {
-	perl -ne '
-	push @lines, $_;
-	END {
-		open(OUT, ">$file")
-		or die "sponge: cannot open $file: $!\n";
-		print OUT @lines;
-		close(OUT);
-	}
-	' -s -- -file="$1"
+  perl -ne '
+  push @lines, $_;
+  END {
+    open(OUT, ">$file")
+    or die "sponge: cannot open $file: $!\n";
+    print OUT @lines;
+    close(OUT);
+  }
+  ' -s -- -file="$1"
 }
 
 # params: file path
@@ -43,7 +43,7 @@ main() {
   # Max thread count is 204822, as given by `cat /proc/sys/kernel/threads-max`
   # https://askubuntu.com/questions/1006377/check-the-max-allowed-threads-count-for-sure#1006384
   # TODO: Perform these steps for each list!
-  if test -f "$nxlist"; then
+  if [ -f "$nxlist" ]; then
     # TODO: Export JSON from dnsX and use jq to pull out domains & ips
     dnsx -r ./configs/resolvers.txt -l "$nxlist" -o "$TMP" -c 20000 -silent -rcode noerror,servfail,refused 1>/dev/null
     merge_lists "$list" "$TMP"
