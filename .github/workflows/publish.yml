@@ -1,20 +1,21 @@
 ---
-name: Publish
+name: Publish List
 
 on:
   schedule:
     - cron: '0 6 * * */3'
   workflow_dispatch:
 
-# https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
 permissions: read-all
 
 jobs:
-  github:
+  publish:
     runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash
+    permissions:
+      contents: write
     container:
       image: ghcr.io/t145/black-mirror:latest
       credentials:
@@ -24,17 +25,17 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
-      - name: Generate lists
+      - name: Publish List
         id: build
         run: |
-          curl --proto '=https' --tlsv1.3 -H 'Accept: application/vnd.github.v3+json' -sSf https://api.github.com/repos/T145/black-mirror/releases/latest |
-            jaq -r '.assets[] | select(.name | endswith("txt")).browser_download_url' |
-            aria2c -i- -d ./assets
-
-          dnsx -silent -rcode nxdomain -l './assets/BLOCK_DOMAIN.txt' -o './dist/BLOCK_NXDOMAIN.txt' 1>/dev/null
-      - name: Update documents
-        if: success()
-        uses: stefanzweifel/git-auto-commit-action@v5
+          chmod -R 755 ./scripts/*
+          ./scripts/github/workflow.bash
+      - name: Dump output context
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
+        run: echo "$STEPS_CONTEXT"
+      - name: Commit changes
+        if: steps.build.outputs.status == 'success'
+        uses: stefanzweifel/git-auto-commit-action@7d0ca8f849305c56d36f992cfb1519b1af5b33f8
         with:
-          # homage to the python linting utility "black"
-          commit_message: ✨🍰✨
+          commit_message: "ci(build): ✨🍰✨"
